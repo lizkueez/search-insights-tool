@@ -1,6 +1,6 @@
+```python
 import streamlit as st
 import pandas as pd
-import re
 
 st.set_page_config(
     page_title="Search Insights",
@@ -12,30 +12,64 @@ st.set_page_config(
 # ==================================================
 
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-html, body, [class*="css"] {
-    font-family: 'Poppins', sans-serif;
-}
 
 .main-title {
     color: #4F6DF5;
-    font-size: 64px;
+    font-size: 72px;
     font-weight: 800;
     line-height: 0.9;
+    margin-bottom: 20px;
 }
 
-.section-header {
+.blue-pill {
     background-color: #4F6DF5;
     color: white;
     padding: 8px 16px;
     border-radius: 8px;
-    font-size: 22px;
     font-weight: 700;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
+
+.report-title {
+    font-size: 54px;
+    font-weight: 800;
+    color: #4F6DF5;
+    line-height: 0.9;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.list-item {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.placeholder-box {
+    border: 2px dashed #D9D9D9;
+    border-radius: 12px;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999999;
+    font-size: 18px;
+}
+
+.update-box {
+    background: #F7F8FA;
+    border-left: 5px solid #4F6DF5;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -64,10 +98,7 @@ st.divider()
 # FILE UPLOADS
 # ==================================================
 
-st.markdown(
-    "<div class='section-header'>Upload Reports</div>",
-    unsafe_allow_html=True
-)
+st.markdown("### Upload Reports")
 
 themes_report = st.file_uploader(
     "Top Performing Themes Report",
@@ -90,22 +121,12 @@ st.divider()
 # KEY UPDATES
 # ==================================================
 
-st.markdown(
-    "<div class='section-header'>Key Updates</div>",
-    unsafe_allow_html=True
-)
-
 key_updates = st.text_area(
-    "",
-    height=200,
-    placeholder="Add manual updates..."
+    "Key Updates",
+    height=200
 )
 
 st.divider()
-
-# ==================================================
-# BUTTON
-# ==================================================
 
 generate = st.button(
     "Generate Search Insights Report",
@@ -131,7 +152,7 @@ def clean_numeric(series):
     )
 
 # ==================================================
-# REPORT
+# REPORT GENERATION
 # ==================================================
 
 if generate:
@@ -140,9 +161,7 @@ if generate:
     high_potential_geos = []
     top_strategies = []
 
-    # ----------------------------------------
-    # GEO REPORT
-    # ----------------------------------------
+    # ---------------- GEO ----------------
 
     if geo_report:
 
@@ -172,17 +191,11 @@ if generate:
             ascending=False
         )
 
-        top_geos = roi_geos[
-            ["Country", "Search ROI Numeric"]
-        ].head(5)
+        top_geos = roi_geos["Country"].head(5).tolist()
 
-        high_potential_geos = rpc_geos[
-            ["Country", "RPC Numeric"]
-        ].head(5)
+        high_potential_geos = rpc_geos["Country"].head(5).tolist()
 
-    # ----------------------------------------
-    # MEDIA REPORT
-    # ----------------------------------------
+    # ---------------- MEDIA ----------------
 
     if media_report:
 
@@ -201,45 +214,148 @@ if generate:
         )
 
         top_strategies = media_df[
-            ["Ad Campaign Bid Type", "Search ROI Numeric"]
-        ].head(3)
+            "Ad Campaign Bid Type"
+        ].head(3).tolist()
 
-    # ----------------------------------------
-    # PREVIEW
-    # ----------------------------------------
+    # ==================================================
+    # REPORT PREVIEW
+    # ==================================================
 
     st.markdown("---")
-    st.header("Search Insights Preview")
 
-    st.subheader(month)
+    st.markdown(
+        f"""
+        <div class="report-title">
+        Search<br>
+        Insights
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    st.markdown("## Top Performing Themes")
-    st.info("AI Theme Generation Coming Next")
+    st.markdown(f"### {month}")
 
-    st.markdown("## Top Performing Geos")
+    st.write("")
 
-    if len(top_geos) > 0:
-        for i, row in enumerate(top_geos.itertuples(), start=1):
-            st.write(
-                f"{i}. {row.Country} (${row._2:,.0f})"
+    # ==================================================
+    # CONTENT
+    # ==================================================
+
+    st.markdown(
+        '<div class="blue-pill">Content</div>',
+        unsafe_allow_html=True
+    )
+
+    left, right = st.columns([1,1])
+
+    with left:
+
+        st.markdown(
+            '<div class="section-title">Top Performing Themes</div>',
+            unsafe_allow_html=True
+        )
+
+        for i in range(1,6):
+            st.markdown(
+                f'<div class="list-item">{i}. Coming Soon</div>',
+                unsafe_allow_html=True
             )
 
-    st.markdown("## High Potential Geos")
+    with right:
 
-    if len(high_potential_geos) > 0:
-        for i, row in enumerate(high_potential_geos.itertuples(), start=1):
-            st.write(
-                f"{i}. {row.Country} ({row._2:.2f} RPC)"
+        st.markdown(
+            """
+            <div class="placeholder-box">
+            Theme ROI Pie Chart
+            <br><br>
+            (Coming Soon)
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.write("")
+    st.write("")
+
+    # ==================================================
+    # MEDIA BUYING
+    # ==================================================
+
+    st.markdown(
+        '<div class="blue-pill">Media Buying</div>',
+        unsafe_allow_html=True
+    )
+
+    geo_col, rpc_col = st.columns(2)
+
+    with geo_col:
+
+        st.markdown(
+            '<div class="section-title">Top Performing Geos</div>',
+            unsafe_allow_html=True
+        )
+
+        for i, geo in enumerate(top_geos, start=1):
+            st.markdown(
+                f'<div class="list-item">{i}. {geo}</div>',
+                unsafe_allow_html=True
             )
 
-    st.markdown("## Top Media Buying Strategies")
+    with rpc_col:
 
-    if len(top_strategies) > 0:
-        for i, row in enumerate(top_strategies.itertuples(), start=1):
-            st.write(
-                f"{i}. {row[1]} (${row[2]:,.0f})"
+        st.markdown(
+            '<div class="section-title">High Potential Geos</div>',
+            unsafe_allow_html=True
+        )
+
+        for i, geo in enumerate(high_potential_geos, start=1):
+            st.markdown(
+                f'<div class="list-item">{i}. {geo}</div>',
+                unsafe_allow_html=True
             )
 
-    st.markdown("## Key Updates")
+    st.write("")
+    st.write("")
 
-    st.write(key_updates)
+    st.markdown(
+        '<div class="section-title">Top Performing Media Buying Strategies</div>',
+        unsafe_allow_html=True
+    )
+
+    for i, strategy in enumerate(top_strategies, start=1):
+        st.markdown(
+            f'<div class="list-item">{i}. {strategy}</div>',
+            unsafe_allow_html=True
+        )
+
+    st.write("")
+    st.write("")
+
+    # ==================================================
+    # KEY UPDATES
+    # ==================================================
+
+    st.markdown("---")
+
+    st.markdown(
+        '<div class="section-title">Key Updates</div>',
+        unsafe_allow_html=True
+    )
+
+    updates = [
+        x.strip()
+        for x in key_updates.split("\n")
+        if x.strip()
+    ]
+
+    for update in updates:
+
+        st.markdown(
+            f"""
+            <div class="update-box">
+            {update}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+```
