@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import re
 
 st.set_page_config(
     page_title="Search Insights",
@@ -7,15 +8,14 @@ st.set_page_config(
 )
 
 # ==================================================
-# CUSTOM STYLING
+# STYLING
 # ==================================================
 
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-
-html, body, [class*="css"]  {
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
 }
 
@@ -24,7 +24,6 @@ html, body, [class*="css"]  {
     font-size: 64px;
     font-weight: 800;
     line-height: 0.9;
-    margin-bottom: 10px;
 }
 
 .section-header {
@@ -37,15 +36,6 @@ html, body, [class*="css"]  {
     display: inline-block;
     margin-bottom: 20px;
 }
-
-.preview-card {
-    background: #F8F9FC;
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    margin-top: 30px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -114,7 +104,7 @@ key_updates = st.text_area(
 st.divider()
 
 # ==================================================
-# GENERATE REPORT
+# BUTTON
 # ==================================================
 
 generate = st.button(
@@ -123,30 +113,36 @@ generate = st.button(
 )
 
 # ==================================================
-# HELPER FUNCTIONS
+# HELPERS
 # ==================================================
 
 def load_file(uploaded_file):
     if uploaded_file.name.endswith(".csv"):
         return pd.read_csv(uploaded_file)
-    else:
-        return pd.read_excel(uploaded_file)
+    return pd.read_excel(uploaded_file)
+
+def clean_numeric(series):
+    return (
+        series.astype(str)
+        .str.replace("$", "", regex=False)
+        .str.replace(",", "", regex=False)
+        .str.replace("%", "", regex=False)
+        .str.strip()
+    )
 
 # ==================================================
-# REPORT LOGIC
+# REPORT
 # ==================================================
 
 if generate:
-
-    st.success("Generating report...")
 
     top_geos = []
     high_potential_geos = []
     top_strategies = []
 
-    # ------------------------------------------
+    # ----------------------------------------
     # GEO REPORT
-    # ------------------------------------------
+    # ----------------------------------------
 
     if geo_report:
 
@@ -154,23 +150,39 @@ if generate:
 
         geo_df.columns = geo_df.columns.str.strip()
 
+        geo_df["Search ROI Numeric"] = pd.to_numeric(
+            clean_numeric(geo_df["Search ROI"]),
+            errors="coerce"
+        )
+
+        geo_df["RPC Numeric"] = pd.to_numeric(
+            clean_numeric(
+                geo_df["Search Revenue Per Search Click"]
+            ),
+            errors="coerce"
+        )
+
         roi_geos = geo_df.sort_values(
-            by="Search ROI",
+            by="Search ROI Numeric",
             ascending=False
         )
 
         rpc_geos = geo_df.sort_values(
-            by="Search Revenue Per Search Click",
+            by="RPC Numeric",
             ascending=False
         )
 
-        top_geos = roi_geos["Country"].head(5).tolist()
+        top_geos = roi_geos[
+            ["Country", "Search ROI Numeric"]
+        ].head(5)
 
-        high_potential_geos = rpc_geos["Country"].head(5).tolist()
+        high_potential_geos = rpc_geos[
+            ["Country", "RPC Numeric"]
+        ].head(5)
 
-    # ------------------------------------------
-    # MEDIA BUYING REPORT
-    # ------------------------------------------
+    # ----------------------------------------
+    # MEDIA REPORT
+    # ----------------------------------------
 
     if media_report:
 
@@ -178,58 +190,56 @@ if generate:
 
         media_df.columns = media_df.columns.str.strip()
 
+        media_df["Search ROI Numeric"] = pd.to_numeric(
+            clean_numeric(media_df["Search ROI"]),
+            errors="coerce"
+        )
+
         media_df = media_df.sort_values(
-            by="Search ROI",
+            by="Search ROI Numeric",
             ascending=False
         )
 
         top_strategies = media_df[
-            "Ad Campaign Bid Type"
-        ].head(3).tolist()
+            ["Ad Campaign Bid Type", "Search ROI Numeric"]
+        ].head(3)
 
-    # ==================================================
+    # ----------------------------------------
     # PREVIEW
-    # ==================================================
+    # ----------------------------------------
 
     st.markdown("---")
+    st.header("Search Insights Preview")
 
-    st.markdown(
-        """
-        <div class="preview-card">
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown("# Search Insights")
-
-    st.markdown(f"### {month}")
+    st.subheader(month)
 
     st.markdown("## Top Performing Themes")
-
-    st.info(
-        "AI Theme Generation Coming Next"
-    )
+    st.info("AI Theme Generation Coming Next")
 
     st.markdown("## Top Performing Geos")
 
-    for i, geo in enumerate(top_geos, start=1):
-        st.write(f"{i}. {geo}")
+    if len(top_geos) > 0:
+        for i, row in enumerate(top_geos.itertuples(), start=1):
+            st.write(
+                f"{i}. {row.Country} (${row._2:,.0f})"
+            )
 
     st.markdown("## High Potential Geos")
 
-    for i, geo in enumerate(high_potential_geos, start=1):
-        st.write(f"{i}. {geo}")
+    if len(high_potential_geos) > 0:
+        for i, row in enumerate(high_potential_geos.itertuples(), start=1):
+            st.write(
+                f"{i}. {row.Country} ({row._2:.2f} RPC)"
+            )
 
     st.markdown("## Top Media Buying Strategies")
 
-    for i, strategy in enumerate(top_strategies, start=1):
-        st.write(f"{i}. {strategy}")
+    if len(top_strategies) > 0:
+        for i, row in enumerate(top_strategies.itertuples(), start=1):
+            st.write(
+                f"{i}. {row[1]} (${row[2]:,.0f})"
+            )
 
     st.markdown("## Key Updates")
 
     st.write(key_updates)
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
