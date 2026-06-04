@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from pdf_generator import create_pdf
 
 st.set_page_config(
     page_title="Search Insights",
