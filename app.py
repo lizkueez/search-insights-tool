@@ -5,15 +5,70 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🔍 Search Insights Generator")
+# ---------- STYLING ----------
 
-month = st.text_input("Month")
+st.markdown("""
+<style>
+
+.main-title {
+    color: #4F6DF5;
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 0.9;
+    margin-bottom: 10px;
+}
+
+.section-header {
+    background-color: #4F6DF5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.preview-box {
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ---------- HEADER ----------
+
+st.markdown(
+    """
+    <div class='main-title'>
+        Search<br>
+        Insights
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+month = st.text_input(
+    "Month",
+    placeholder="June 2026"
+)
 
 st.divider()
 
-st.header("Top Performing Verticals")
+# ---------- CONTENT ----------
+
+st.markdown(
+    "<div class='section-header'>Content</div>",
+    unsafe_allow_html=True
+)
+
+st.subheader("Top Performing Verticals")
 
 verticals = []
+
 for i in range(5):
     verticals.append(
         st.text_input(
@@ -24,11 +79,18 @@ for i in range(5):
 
 st.divider()
 
+# ---------- MEDIA BUYING ----------
+
+st.markdown(
+    "<div class='section-header'>Media Buying</div>",
+    unsafe_allow_html=True
+)
+
 col1, col2 = st.columns(2)
 
 with col1:
 
-    st.header("Top Performing Geos")
+    st.subheader("Top Performing Geos")
 
     top_geos = []
 
@@ -42,7 +104,7 @@ with col1:
 
 with col2:
 
-    st.header("High Potential Geos")
+    st.subheader("High Potential Geos")
 
     high_potential_geos = []
 
@@ -54,9 +116,9 @@ with col2:
             )
         )
 
-st.divider()
+st.markdown("")
 
-st.header("Top Media Buying Strategies")
+st.subheader("Top Media Buying Strategies")
 
 strategies = []
 
@@ -70,25 +132,46 @@ for i in range(3):
 
 st.divider()
 
-st.header("Key Updates")
+# ---------- KEY UPDATES ----------
+
+st.subheader("Key Updates")
 
 key_updates = st.text_area(
     "Key Updates",
     height=250,
-    placeholder="Add key findings, trends, opportunities, and recommendations..."
+    placeholder="Add key findings, opportunities, recommendations, and market trends..."
 )
 
 st.divider()
 
-if st.button("Generate Report", use_container_width=True):
+# ---------- BUTTON ----------
+
+generate = st.button(
+    "Generate Search Insights Report",
+    use_container_width=True
+)
+
+# ---------- PREVIEW ----------
+
+if generate:
 
     st.success("Report generated successfully!")
 
     st.markdown("---")
 
-    st.title("Search Insights Preview")
+    st.markdown(
+        """
+        <div class='main-title' style='font-size:48px;'>
+            Search<br>
+            Insights
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     st.subheader(month)
+
+    st.markdown("<div class='preview-box'>", unsafe_allow_html=True)
 
     st.markdown("### Top Performing Verticals")
 
@@ -117,3 +200,5 @@ if st.button("Generate Report", use_container_width=True):
     st.markdown("### Key Updates")
 
     st.write(key_updates)
+
+    st.markdown("</div>", unsafe_allow_html=True)
