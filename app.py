@@ -56,7 +56,7 @@ with col2:
 
 st.divider()
 
-st.header("Top Performing Media Buying Strategies")
+st.header("Top Media Buying Strategies")
 
 strategies = []
 
@@ -70,43 +70,50 @@ for i in range(3):
 
 st.divider()
 
-st.header("Updates")
+st.header("Key Updates")
 
-update_1 = st.text_area("Update #1")
-update_2 = st.text_area("Update #2")
-update_3 = st.text_area("Update #3")
+key_updates = st.text_area(
+    "Key Updates",
+    height=250,
+    placeholder="Add key findings, trends, opportunities, and recommendations..."
+)
 
 st.divider()
 
 if st.button("Generate Report", use_container_width=True):
 
-    st.success("Data captured successfully!")
+    st.success("Report generated successfully!")
 
-    st.write("### Preview")
+    st.markdown("---")
 
-    st.write("Month:", month)
+    st.title("Search Insights Preview")
 
-    st.write("#### Top Performing Verticals")
-    for item in verticals:
+    st.subheader(month)
+
+    st.markdown("### Top Performing Verticals")
+
+    for i, item in enumerate(verticals, start=1):
         if item:
-            st.write("•", item)
+            st.write(f"{i}. {item}")
 
-    st.write("#### Top Performing Geos")
-    for item in top_geos:
-        if item:
-            st.write("•", item)
+    st.markdown("### Top Performing Geos")
 
-    st.write("#### High Potential Geos")
-    for item in high_potential_geos:
+    for i, item in enumerate(top_geos, start=1):
         if item:
-            st.write("•", item)
+            st.write(f"{i}. {item}")
 
-    st.write("#### Media Buying Strategies")
-    for item in strategies:
-        if item:
-            st.write("•", item)
+    st.markdown("### High Potential Geos")
 
-    st.write("#### Updates")
-    for item in [update_1, update_2, update_3]:
+    for i, item in enumerate(high_potential_geos, start=1):
         if item:
-            st.write("•", item)
+            st.write(f"{i}. {item}")
+
+    st.markdown("### Top Media Buying Strategies")
+
+    for i, item in enumerate(strategies, start=1):
+        if item:
+            st.write(f"{i}. {item}")
+
+    st.markdown("### Key Updates")
+
+    st.write(key_updates)
