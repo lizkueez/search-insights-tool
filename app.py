@@ -45,17 +45,6 @@ html, body, [class*="css"]  {
     margin-top: 30px;
 }
 
-.preview-title {
-    color: #4F6DF5;
-    font-size: 42px;
-    font-weight: 800;
-    line-height: 0.9;
-}
-
-.small-spacer {
-    height: 15px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -81,80 +70,28 @@ month = st.text_input(
 st.divider()
 
 # ==================================================
-# CONTENT
+# REPORT UPLOADS
 # ==================================================
 
 st.markdown(
-    "<div class='section-header'>Content</div>",
+    "<div class='section-header'>Upload Reports</div>",
     unsafe_allow_html=True
 )
 
-st.subheader("Top Performing Verticals")
-
-verticals = []
-
-for i in range(5):
-    verticals.append(
-        st.text_input(
-            f"{i+1}.",
-            key=f"vertical_{i}"
-        )
-    )
-
-st.divider()
-
-# ==================================================
-# MEDIA BUYING
-# ==================================================
-
-st.markdown(
-    "<div class='section-header'>Media Buying</div>",
-    unsafe_allow_html=True
+articles_report = st.file_uploader(
+    "Top Performing Themes Report (Articles)",
+    type=["csv", "xlsx"]
 )
 
-col1, col2 = st.columns(2)
+geo_report = st.file_uploader(
+    "Geo Performance Report",
+    type=["csv", "xlsx"]
+)
 
-with col1:
-
-    st.subheader("Top Performing Geos")
-
-    top_geos = []
-
-    for i in range(5):
-        top_geos.append(
-            st.text_input(
-                f"{i+1}. ",
-                key=f"top_geo_{i}"
-            )
-        )
-
-with col2:
-
-    st.subheader("High Potential Geos")
-
-    high_potential_geos = []
-
-    for i in range(5):
-        high_potential_geos.append(
-            st.text_input(
-                f"{i+1}.  ",
-                key=f"potential_geo_{i}"
-            )
-        )
-
-st.markdown("")
-
-st.subheader("Top Media Buying Strategies")
-
-strategies = []
-
-for i in range(3):
-    strategies.append(
-        st.text_input(
-            f"{i+1}.   ",
-            key=f"strategy_{i}"
-        )
-    )
+media_buying_report = st.file_uploader(
+    "Media Buying Strategies Report",
+    type=["csv", "xlsx"]
+)
 
 st.divider()
 
@@ -162,18 +99,21 @@ st.divider()
 # KEY UPDATES
 # ==================================================
 
-st.subheader("Key Updates")
+st.markdown(
+    "<div class='section-header'>Key Updates</div>",
+    unsafe_allow_html=True
+)
 
 key_updates = st.text_area(
     "",
     height=200,
-    placeholder="Add key findings, opportunities, trends, and recommendations..."
+    placeholder="Add manual updates, partner recommendations, trends, and observations..."
 )
 
 st.divider()
 
 # ==================================================
-# GENERATE REPORT
+# GENERATE BUTTON
 # ==================================================
 
 generate = st.button(
@@ -182,12 +122,12 @@ generate = st.button(
 )
 
 # ==================================================
-# REPORT PREVIEW
+# PREVIEW
 # ==================================================
 
 if generate:
 
-    st.success("Report generated successfully!")
+    st.success("Reports uploaded successfully!")
 
     st.markdown("---")
 
@@ -198,47 +138,43 @@ if generate:
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        """
-        <div class="preview-title">
-        Search<br>
-        Insights
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+    st.markdown("## Search Insights")
     st.markdown(f"### {month}")
 
-    st.markdown("## Top Performing Verticals")
+    st.markdown("### Uploaded Reports")
 
-    for i, item in enumerate(verticals, start=1):
-        if item:
-            st.write(f"{i}. {item}")
+    if articles_report:
+        st.write("✅ Themes Report Uploaded")
 
-    st.markdown("## Top Performing Geos")
+    if geo_report:
+        st.write("✅ Geo Report Uploaded")
 
-    for i, item in enumerate(top_geos, start=1):
-        if item:
-            st.write(f"{i}. {item}")
+    if media_buying_report:
+        st.write("✅ Media Buying Report Uploaded")
 
-    st.markdown("## High Potential Geos")
-
-    for i, item in enumerate(high_potential_geos, start=1):
-        if item:
-            st.write(f"{i}. {item}")
-
-    st.markdown("## Top Media Buying Strategies")
-
-    for i, item in enumerate(strategies, start=1):
-        if item:
-            st.write(f"{i}. {item}")
-
-    st.markdown("## Key Updates")
+    st.markdown("### Key Updates")
 
     st.write(key_updates)
 
     st.markdown(
-        "</div>",
+        """
+        🚧 Next Version:
+        <br><br>
+        • Read uploaded files
+        <br>
+        • Generate Top Performing Themes
+        <br>
+        • Generate Top Performing Geos
+        <br>
+        • Generate High Potential Geos
+        <br>
+        • Generate Top Media Buying Strategies
+        <br>
+        • Create ROI pie chart
+        <br>
+        • Export PDF
+        """,
         unsafe_allow_html=True
     )
+
+    st.markdown("</div>", unsafe_allow_html=True)
