@@ -1,1 +1,537 @@
+import streamlit as st
+import pandas as pd
+from io import BytesIO
 
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    PageBreak
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
+
+st.set_page_config(
+    page_title="Search Insights",
+    layout="wide"
+)
+
+# ==================================================
+# STYLING
+# ==================================================
+
+st.markdown("""
+<style>
+
+.main-title {
+    color: #4F6DF5;
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 0.9;
+    margin-bottom: 20px;
+}
+
+.blue-pill {
+    background-color: #4F6DF5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.report-title {
+    font-size: 54px;
+    font-weight: 800;
+    color: #4F6DF5;
+    line-height: 0.9;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.list-item {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.placeholder-box {
+    border: 2px dashed #D9D9D9;
+    border-radius: 12px;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999999;
+    font-size: 18px;
+}
+
+.update-box {
+    background: #F7F8FA;
+    border-left: 5px solid #4F6DF5;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==================================================
+# HEADER
+# ==================================================
+
+st.markdown(
+    """
+    <div class="main-title">
+    Search<br>
+    Insights
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+month = st.text_input(
+    "Month",
+    placeholder="June 2026"
+)
+
+st.divider()
+
+# ==================================================
+# FILE UPLOADS
+# ==================================================
+
+st.markdown("### Upload Reports")
+
+themes_report = st.file_uploader(
+    "Top Performing Themes Report",
+    type=["csv", "xlsx"]
+)
+
+geo_report = st.file_uploader(
+    "Geo Performance Report",
+    type=["csv", "xlsx"]
+)
+
+media_report = st.file_uploader(
+    "Media Buying Strategies Report",
+    type=["csv", "xlsx"]
+)
+
+st.divider()
+
+# ==================================================
+# KEY UPDATES
+# ==================================================
+
+key_updates = st.text_area(
+    "Key Updates",
+    height=200
+)
+
+st.divider()
+
+generate = st.button(
+    "Generate Search Insights Report",
+    use_container_width=True
+)
+
+# ==================================================
+# HELPERS
+# ==================================================
+
+def load_file(uploaded_file):
+    if uploaded_file.name.endswith(".csv"):
+        return pd.read_csv(uploaded_file)
+    return pd.read_excel(uploaded_file)
+
+def clean_numeric(series):
+    return (
+        series.astype(str)
+        .str.replace("$", "", regex=False)
+        .str.replace(",", "", regex=False)
+        .str.replace("%", "", regex=False)
+        .str.strip()
+    )
+def create_pdf(
+    month,
+    top_geos,
+    high_potential_geos,
+    top_strategies,
+    key_updates
+):
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # PAGE 1
+
+    elements.append(
+        Paragraph("Search Insights", styles["Title"])
+    )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    elements.append(
+        Paragraph(month, styles["Heading1"])
+    )
+
+    elements.append(PageBreak())
+
+    # PAGE 2
+
+    elements.append(
+        Paragraph("Content", styles["Heading1"])
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Themes",
+            styles["Heading2"]
+        )
+    )
+
+    for i in range(1, 6):
+        elements.append(
+            Paragraph(
+                f"{i}. Coming Soon",
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    elements.append(
+        Paragraph(
+            "Media Buying",
+            styles["Heading1"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Geos",
+            styles["Heading2"]
+        )
+    )
+
+    for geo in top_geos:
+        elements.append(
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            "High Potential Geos",
+            styles["Heading2"]
+        )
+    )
+
+    for geo in high_potential_geos:
+        elements.append(
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Media Buying Strategies",
+            styles["Heading2"]
+        )
+    )
+
+    for strategy in top_strategies:
+        elements.append(
+            Paragraph(
+                strategy,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(PageBreak())
+
+    # PAGE 3
+
+    elements.append(
+        Paragraph(
+            "Key Updates",
+            styles["Heading1"]
+        )
+    )
+
+    for line in key_updates.split("\n"):
+
+        if line.strip():
+
+            elements.append(
+                Paragraph(
+                    line,
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Spacer(1, 10)
+            )
+
+    doc.build(elements)
+
+    buffer.seek(0)
+
+    return buffer
+# ==================================================
+# REPORT GENERATION
+# ==================================================
+
+if generate:
+
+    top_geos = []
+    high_potential_geos = []
+    top_strategies = []
+
+    # ---------------- GEO ----------------
+
+    if geo_report:
+
+        geo_df = load_file(geo_report)
+
+        geo_df.columns = geo_df.columns.str.strip()
+
+        geo_df["Search ROI Numeric"] = pd.to_numeric(
+            clean_numeric(geo_df["Search ROI"]),
+            errors="coerce"
+        )
+
+        geo_df["RPC Numeric"] = pd.to_numeric(
+            clean_numeric(
+                geo_df["Search Revenue Per Search Click"]
+            ),
+            errors="coerce"
+        )
+
+        roi_geos = geo_df.sort_values(
+            by="Search ROI Numeric",
+            ascending=False
+        )
+
+        rpc_geos = geo_df.sort_values(
+            by="RPC Numeric",
+            ascending=False
+        )
+
+        top_geos = roi_geos["Country"].head(5).tolist()
+
+        high_potential_geos = rpc_geos["Country"].head(5).tolist()
+
+    # ---------------- MEDIA ----------------
+
+    if media_report:
+
+        media_df = load_file(media_report)
+
+        media_df.columns = media_df.columns.str.strip()
+
+        media_df["Search ROI Numeric"] = pd.to_numeric(
+            clean_numeric(media_df["Search ROI"]),
+            errors="coerce"
+        )
+
+        media_df = media_df.sort_values(
+            by="Search ROI Numeric",
+            ascending=False
+        )
+
+        top_strategies = media_df[
+            "Ad Campaign Bid Type"
+        ].head(3).tolist()
+
+    # ==================================================
+    # REPORT PREVIEW
+    # ==================================================
+
+    st.markdown("---")
+
+    st.markdown(
+        f"""
+        <div class="report-title">
+        Search<br>
+        Insights
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(f"### {month}")
+
+    st.write("")
+
+    # ==================================================
+    # CONTENT
+    # ==================================================
+
+    st.markdown(
+        '<div class="blue-pill">Content</div>',
+        unsafe_allow_html=True
+    )
+
+    left, right = st.columns([1,1])
+
+    with left:
+
+        st.markdown(
+            '<div class="section-title">Top Performing Themes</div>',
+            unsafe_allow_html=True
+        )
+
+        for i in range(1,6):
+            st.markdown(
+                f'<div class="list-item">{i}. Coming Soon</div>',
+                unsafe_allow_html=True
+            )
+
+    with right:
+
+        st.markdown(
+            """
+            <div class="placeholder-box">
+            Theme ROI Pie Chart
+            <br><br>
+            (Coming Soon)
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.write("")
+    st.write("")
+
+    # ==================================================
+    # MEDIA BUYING
+    # ==================================================
+
+    st.markdown(
+        '<div class="blue-pill">Media Buying</div>',
+        unsafe_allow_html=True
+    )
+
+    geo_col, rpc_col = st.columns(2)
+
+    with geo_col:
+
+        st.markdown(
+            '<div class="section-title">Top Performing Geos</div>',
+            unsafe_allow_html=True
+        )
+
+        for i, geo in enumerate(top_geos, start=1):
+            st.markdown(
+                f'<div class="list-item">{i}. {geo}</div>',
+                unsafe_allow_html=True
+            )
+
+    with rpc_col:
+
+        st.markdown(
+            '<div class="section-title">High Potential Geos</div>',
+            unsafe_allow_html=True
+        )
+
+        for i, geo in enumerate(high_potential_geos, start=1):
+            st.markdown(
+                f'<div class="list-item">{i}. {geo}</div>',
+                unsafe_allow_html=True
+            )
+
+    st.write("")
+    st.write("")
+
+    st.markdown(
+        '<div class="section-title">Top Performing Media Buying Strategies</div>',
+        unsafe_allow_html=True
+    )
+
+    for i, strategy in enumerate(top_strategies, start=1):
+        st.markdown(
+            f'<div class="list-item">{i}. {strategy}</div>',
+            unsafe_allow_html=True
+        )
+
+    st.write("")
+    st.write("")
+
+    # ==================================================
+    # KEY UPDATES
+    # ==================================================
+
+    st.markdown("---")
+
+    st.markdown(
+        '<div class="section-title">Key Updates</div>',
+        unsafe_allow_html=True
+    )
+
+    updates = [
+        x.strip()
+        for x in key_updates.split("\n")
+        if x.strip()
+    ]
+
+
+
+
+
+  for update in updates:
+
+    st.markdown(
+        f"""
+        <div class="update-box">
+        {update}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.markdown("---")
+
+pdf_file = create_pdf(
+    month,
+    top_geos,
+    high_potential_geos,
+    top_strategies,
+    key_updates
+)
+
+st.download_button(
+    label="📄 Download PDF",
+    data=pdf_file,
+    file_name=f"Search_Insights_{month}.pdf",
+    mime="application/pdf"
+)
