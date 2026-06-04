@@ -504,6 +504,10 @@ if generate:
         if x.strip()
     ]
 
+
+
+
+
   for update in updates:
 
     st.markdown(
