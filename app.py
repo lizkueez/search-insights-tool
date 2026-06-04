@@ -5,14 +5,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- STYLING ----------
+# ==================================================
+# CUSTOM STYLING
+# ==================================================
 
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
+
+html, body, [class*="css"]  {
+    font-family: 'Poppins', sans-serif;
+}
 
 .main-title {
     color: #4F6DF5;
-    font-size: 72px;
+    font-size: 64px;
     font-weight: 800;
     line-height: 0.9;
     margin-bottom: 10px;
@@ -23,29 +31,43 @@ st.markdown("""
     color: white;
     padding: 8px 16px;
     border-radius: 8px;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.preview-box {
-    border: 1px solid #333;
+.preview-card {
+    background: #F8F9FC;
+    padding: 30px;
     border-radius: 12px;
-    padding: 20px;
-    margin-top: 20px;
+    border: 1px solid #E5E7EB;
+    margin-top: 30px;
+}
+
+.preview-title {
+    color: #4F6DF5;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 0.9;
+}
+
+.small-spacer {
+    height: 15px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- HEADER ----------
+# ==================================================
+# HEADER
+# ==================================================
 
 st.markdown(
     """
-    <div class='main-title'>
-        Search<br>
-        Insights
+    <div class="main-title">
+    Search<br>
+    Insights
     </div>
     """,
     unsafe_allow_html=True
@@ -58,7 +80,9 @@ month = st.text_input(
 
 st.divider()
 
-# ---------- CONTENT ----------
+# ==================================================
+# CONTENT
+# ==================================================
 
 st.markdown(
     "<div class='section-header'>Content</div>",
@@ -72,14 +96,16 @@ verticals = []
 for i in range(5):
     verticals.append(
         st.text_input(
-            f"Vertical #{i+1}",
+            f"{i+1}.",
             key=f"vertical_{i}"
         )
     )
 
 st.divider()
 
-# ---------- MEDIA BUYING ----------
+# ==================================================
+# MEDIA BUYING
+# ==================================================
 
 st.markdown(
     "<div class='section-header'>Media Buying</div>",
@@ -97,7 +123,7 @@ with col1:
     for i in range(5):
         top_geos.append(
             st.text_input(
-                f"Top Geo #{i+1}",
+                f"{i+1}. ",
                 key=f"top_geo_{i}"
             )
         )
@@ -111,7 +137,7 @@ with col2:
     for i in range(5):
         high_potential_geos.append(
             st.text_input(
-                f"High Potential Geo #{i+1}",
+                f"{i+1}.  ",
                 key=f"potential_geo_{i}"
             )
         )
@@ -125,33 +151,39 @@ strategies = []
 for i in range(3):
     strategies.append(
         st.text_input(
-            f"Strategy #{i+1}",
+            f"{i+1}.   ",
             key=f"strategy_{i}"
         )
     )
 
 st.divider()
 
-# ---------- KEY UPDATES ----------
+# ==================================================
+# KEY UPDATES
+# ==================================================
 
 st.subheader("Key Updates")
 
 key_updates = st.text_area(
-    "Key Updates",
-    height=250,
-    placeholder="Add key findings, opportunities, recommendations, and market trends..."
+    "",
+    height=200,
+    placeholder="Add key findings, opportunities, trends, and recommendations..."
 )
 
 st.divider()
 
-# ---------- BUTTON ----------
+# ==================================================
+# GENERATE REPORT
+# ==================================================
 
 generate = st.button(
     "Generate Search Insights Report",
     use_container_width=True
 )
 
-# ---------- PREVIEW ----------
+# ==================================================
+# REPORT PREVIEW
+# ==================================================
 
 if generate:
 
@@ -161,44 +193,52 @@ if generate:
 
     st.markdown(
         """
-        <div class='main-title' style='font-size:48px;'>
-            Search<br>
-            Insights
+        <div class="preview-card">
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="preview-title">
+        Search<br>
+        Insights
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    st.subheader(month)
+    st.markdown(f"### {month}")
 
-    st.markdown("<div class='preview-box'>", unsafe_allow_html=True)
-
-    st.markdown("### Top Performing Verticals")
+    st.markdown("## Top Performing Verticals")
 
     for i, item in enumerate(verticals, start=1):
         if item:
             st.write(f"{i}. {item}")
 
-    st.markdown("### Top Performing Geos")
+    st.markdown("## Top Performing Geos")
 
     for i, item in enumerate(top_geos, start=1):
         if item:
             st.write(f"{i}. {item}")
 
-    st.markdown("### High Potential Geos")
+    st.markdown("## High Potential Geos")
 
     for i, item in enumerate(high_potential_geos, start=1):
         if item:
             st.write(f"{i}. {item}")
 
-    st.markdown("### Top Media Buying Strategies")
+    st.markdown("## Top Media Buying Strategies")
 
     for i, item in enumerate(strategies, start=1):
         if item:
             st.write(f"{i}. {item}")
 
-    st.markdown("### Key Updates")
+    st.markdown("## Key Updates")
 
     st.write(key_updates)
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
+    )
