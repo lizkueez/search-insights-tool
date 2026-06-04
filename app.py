@@ -160,246 +160,151 @@ def clean_numeric(series):
         .str.strip()
     )
 def create_pdf(
-month,
-top_geos,
-high_potential_geos,
-top_strategies,
-key_updates
+    month,
+    top_geos,
+    high_potential_geos,
+    top_strategies,
+    key_updates
 ):
 
-from reportlab.lib import colors
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_LEFT
+    buffer = BytesIO()
 
-buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer)
 
-doc = SimpleDocTemplate(
-    buffer,
-    rightMargin=40,
-    leftMargin=40,
-    topMargin=40,
-    bottomMargin=40
-)
+    styles = getSampleStyleSheet()
 
-elements = []
+    elements = []
 
-title_style = ParagraphStyle(
-    "Title",
-    fontSize=34,
-    leading=32,
-    textColor=colors.HexColor("#4F6DF5"),
-    alignment=TA_LEFT,
-    spaceAfter=20
-)
+    # PAGE 1
 
-month_style = ParagraphStyle(
-    "Month",
-    fontSize=16,
-    leading=20,
-    textColor=colors.black
-)
-
-section_style = ParagraphStyle(
-    "Section",
-    fontSize=18,
-    leading=22,
-    textColor=colors.white,
-    backColor=colors.HexColor("#4F6DF5"),
-    leftIndent=10,
-    spaceBefore=10,
-    spaceAfter=15
-)
-
-heading_style = ParagraphStyle(
-    "Heading",
-    fontSize=18,
-    leading=22,
-    textColor=colors.black,
-    spaceBefore=15,
-    spaceAfter=10
-)
-
-item_style = ParagraphStyle(
-    "Item",
-    fontSize=12,
-    leading=18
-)
-
-update_style = ParagraphStyle(
-    "Update",
-    fontSize=12,
-    leading=18,
-    borderColor=colors.HexColor("#4F6DF5"),
-    borderWidth=1,
-    borderPadding=10,
-    backColor=colors.HexColor("#F7F8FA")
-)
-
-# =====================================
-# PAGE 1
-# =====================================
-
-elements.append(
-    Paragraph(
-        "Search<br/>Insights",
-        title_style
+    elements.append(
+        Paragraph("Search Insights", styles["Title"])
     )
-)
 
-elements.append(
-    Paragraph(
-        month,
-        month_style
+    elements.append(
+        Spacer(1, 20)
     )
-)
 
-elements.append(
-    Spacer(1, 500)
-)
-
-elements.append(PageBreak())
-
-# =====================================
-# PAGE 2
-# =====================================
-
-elements.append(
-    Paragraph(
-        "Content",
-        section_style
+    elements.append(
+        Paragraph(month, styles["Heading1"])
     )
-)
 
-elements.append(
-    Paragraph(
-        "Top Performing Themes",
-        heading_style
+    elements.append(PageBreak())
+
+    # PAGE 2
+
+    elements.append(
+        Paragraph("Content", styles["Heading1"])
     )
-)
 
-for i in range(1, 6):
     elements.append(
         Paragraph(
-            f"{i}. Coming Soon",
-            item_style
+            "Top Performing Themes",
+            styles["Heading2"]
         )
     )
 
-elements.append(
-    Spacer(1, 30)
-)
-
-elements.append(
-    Paragraph(
-        "Theme Distribution Chart (Coming Soon)",
-        heading_style
-    )
-)
-
-elements.append(
-    Spacer(1, 200)
-)
-
-elements.append(PageBreak())
-
-# =====================================
-# PAGE 3
-# =====================================
-
-elements.append(
-    Paragraph(
-        "Media Buying",
-        section_style
-    )
-)
-
-elements.append(
-    Paragraph(
-        "Top Performing Geos",
-        heading_style
-    )
-)
-
-for geo in top_geos:
-    elements.append(
-        Paragraph(
-            f"• {geo}",
-            item_style
-        )
-    )
-
-elements.append(
-    Spacer(1, 20)
-)
-
-elements.append(
-    Paragraph(
-        "High Potential Geos",
-        heading_style
-    )
-)
-
-for geo in high_potential_geos:
-    elements.append(
-        Paragraph(
-            f"• {geo}",
-            item_style
-        )
-    )
-
-elements.append(
-    Spacer(1, 20)
-)
-
-elements.append(
-    Paragraph(
-        "Top Performing Media Buying Strategies",
-        heading_style
-    )
-)
-
-for strategy in top_strategies:
-    elements.append(
-        Paragraph(
-            f"• {strategy}",
-            item_style
-        )
-    )
-
-elements.append(PageBreak())
-
-# =====================================
-# PAGE 4
-# =====================================
-
-elements.append(
-    Paragraph(
-        "Key Updates",
-        section_style
-    )
-)
-
-for line in key_updates.split("\n"):
-
-    if line.strip():
-
+    for i in range(1, 6):
         elements.append(
             Paragraph(
-                line,
-                update_style
+                f"{i}. Coming Soon",
+                styles["BodyText"]
             )
         )
 
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    elements.append(
+        Paragraph(
+            "Media Buying",
+            styles["Heading1"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Geos",
+            styles["Heading2"]
+        )
+    )
+
+    for geo in top_geos:
         elements.append(
-            Spacer(1, 10)
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
         )
 
-doc.build(elements)
+    elements.append(
+        Spacer(1, 10)
+    )
 
-buffer.seek(0)
+    elements.append(
+        Paragraph(
+            "High Potential Geos",
+            styles["Heading2"]
+        )
+    )
 
-return buffer
-```
+    for geo in high_potential_geos:
+        elements.append(
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Media Buying Strategies",
+            styles["Heading2"]
+        )
+    )
+
+    for strategy in top_strategies:
+        elements.append(
+            Paragraph(
+                strategy,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(PageBreak())
+
+    # PAGE 3
+
+    elements.append(
+        Paragraph(
+            "Key Updates",
+            styles["Heading1"]
+        )
+    )
+
+    for line in key_updates.split("\n"):
+
+        if line.strip():
+
+            elements.append(
+                Paragraph(
+                    line,
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Spacer(1, 10)
+            )
+
+    doc.build(elements)
+
+    buffer.seek(0)
 
     return buffer
 # ==================================================
@@ -598,31 +503,35 @@ if generate:
         for x in key_updates.split("\n")
         if x.strip()
     ]
-    
-    for update in updates:
 
-        st.markdown(
-            f"""
-            <div class="update-box">
-            {update}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
-    st.markdown("---")
 
-    pdf_file = create_pdf(
-        month,
-        top_geos,
-        high_potential_geos,
-        top_strategies,
-        key_updates
+
+
+  for update in updates:
+
+    st.markdown(
+        f"""
+        <div class="update-box">
+        {update}
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.download_button(
-        label="📄 Download PDF",
-        data=pdf_file,
-        file_name=f"Search_Insights_{month}.pdf",
-        mime="application/pdf"
-    )
+st.markdown("---")
+
+pdf_file = create_pdf(
+    month,
+    top_geos,
+    high_potential_geos,
+    top_strategies,
+    key_updates
+)
+
+st.download_button(
+    label="📄 Download PDF",
+    data=pdf_file,
+    file_name=f"Search_Insights_{month}.pdf",
+    mime="application/pdf"
+)
