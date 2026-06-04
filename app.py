@@ -167,7 +167,6 @@ top_strategies,
 key_updates
 ):
 
-```
 from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_LEFT
