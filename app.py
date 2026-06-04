@@ -1,5 +1,15 @@
 import streamlit as st
 import pandas as pd
+from io import BytesIO
+
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    PageBreak
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
 
 st.set_page_config(
     page_title="Search Insights",
@@ -149,7 +159,154 @@ def clean_numeric(series):
         .str.replace("%", "", regex=False)
         .str.strip()
     )
+def create_pdf(
+    month,
+    top_geos,
+    high_potential_geos,
+    top_strategies,
+    key_updates
+):
 
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # PAGE 1
+
+    elements.append(
+        Paragraph("Search Insights", styles["Title"])
+    )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    elements.append(
+        Paragraph(month, styles["Heading1"])
+    )
+
+    elements.append(PageBreak())
+
+    # PAGE 2
+
+    elements.append(
+        Paragraph("Content", styles["Heading1"])
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Themes",
+            styles["Heading2"]
+        )
+    )
+
+    for i in range(1, 6):
+        elements.append(
+            Paragraph(
+                f"{i}. Coming Soon",
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    elements.append(
+        Paragraph(
+            "Media Buying",
+            styles["Heading1"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Geos",
+            styles["Heading2"]
+        )
+    )
+
+    for geo in top_geos:
+        elements.append(
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            "High Potential Geos",
+            styles["Heading2"]
+        )
+    )
+
+    for geo in high_potential_geos:
+        elements.append(
+            Paragraph(
+                geo,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            "Top Performing Media Buying Strategies",
+            styles["Heading2"]
+        )
+    )
+
+    for strategy in top_strategies:
+        elements.append(
+            Paragraph(
+                strategy,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(PageBreak())
+
+    # PAGE 3
+
+    elements.append(
+        Paragraph(
+            "Key Updates",
+            styles["Heading1"]
+        )
+    )
+
+    for line in key_updates.split("\n"):
+
+        if line.strip():
+
+            elements.append(
+                Paragraph(
+                    line,
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Spacer(1, 10)
+            )
+
+    doc.build(elements)
+
+    buffer.seek(0)
+
+    return buffer
 # ==================================================
 # REPORT GENERATION
 # ==================================================
@@ -348,6 +505,22 @@ if generate:
     ]
 
     for update in updates:
+            st.markdown("---")
+
+    pdf_file = create_pdf(
+        month,
+        top_geos,
+        high_potential_geos,
+        top_strategies,
+        key_updates
+    )
+
+    st.download_button(
+        label="📄 Download PDF",
+        data=pdf_file,
+        file_name=f"Search_Insights_{month}.pdf",
+        mime="application/pdf"
+    )
 
         st.markdown(
             f"""
