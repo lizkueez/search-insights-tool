@@ -503,35 +503,31 @@ if generate:
         for x in key_updates.split("\n")
         if x.strip()
     ]
+    
+    for update in updates:
 
+        st.markdown(
+            f"""
+            <div class="update-box">
+            {update}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
+    st.markdown("---")
 
-
-
-  for update in updates:
-
-    st.markdown(
-        f"""
-        <div class="update-box">
-        {update}
-        </div>
-        """,
-        unsafe_allow_html=True
+    pdf_file = create_pdf(
+        month,
+        top_geos,
+        high_potential_geos,
+        top_strategies,
+        key_updates
     )
 
-st.markdown("---")
-
-pdf_file = create_pdf(
-    month,
-    top_geos,
-    high_potential_geos,
-    top_strategies,
-    key_updates
-)
-
-st.download_button(
-    label="📄 Download PDF",
-    data=pdf_file,
-    file_name=f"Search_Insights_{month}.pdf",
-    mime="application/pdf"
-)
+    st.download_button(
+        label="📄 Download PDF",
+        data=pdf_file,
+        file_name=f"Search_Insights_{month}.pdf",
+        mime="application/pdf"
+    )
