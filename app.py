@@ -357,4 +357,3 @@ if generate:
             """,
             unsafe_allow_html=True
         )
-```
