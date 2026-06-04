@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(
     page_title="Search Insights",
@@ -70,7 +71,7 @@ month = st.text_input(
 st.divider()
 
 # ==================================================
-# REPORT UPLOADS
+# FILE UPLOADS
 # ==================================================
 
 st.markdown(
@@ -78,8 +79,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-articles_report = st.file_uploader(
-    "Top Performing Themes Report (Articles)",
+themes_report = st.file_uploader(
+    "Top Performing Themes Report",
     type=["csv", "xlsx"]
 )
 
@@ -88,7 +89,7 @@ geo_report = st.file_uploader(
     type=["csv", "xlsx"]
 )
 
-media_buying_report = st.file_uploader(
+media_report = st.file_uploader(
     "Media Buying Strategies Report",
     type=["csv", "xlsx"]
 )
@@ -107,13 +108,13 @@ st.markdown(
 key_updates = st.text_area(
     "",
     height=200,
-    placeholder="Add manual updates, partner recommendations, trends, and observations..."
+    placeholder="Add manual updates..."
 )
 
 st.divider()
 
 # ==================================================
-# GENERATE BUTTON
+# GENERATE REPORT
 # ==================================================
 
 generate = st.button(
@@ -122,12 +123,73 @@ generate = st.button(
 )
 
 # ==================================================
-# PREVIEW
+# HELPER FUNCTIONS
+# ==================================================
+
+def load_file(uploaded_file):
+    if uploaded_file.name.endswith(".csv"):
+        return pd.read_csv(uploaded_file)
+    else:
+        return pd.read_excel(uploaded_file)
+
+# ==================================================
+# REPORT LOGIC
 # ==================================================
 
 if generate:
 
-    st.success("Reports uploaded successfully!")
+    st.success("Generating report...")
+
+    top_geos = []
+    high_potential_geos = []
+    top_strategies = []
+
+    # ------------------------------------------
+    # GEO REPORT
+    # ------------------------------------------
+
+    if geo_report:
+
+        geo_df = load_file(geo_report)
+
+        geo_df.columns = geo_df.columns.str.strip()
+
+        roi_geos = geo_df.sort_values(
+            by="Search ROI",
+            ascending=False
+        )
+
+        rpc_geos = geo_df.sort_values(
+            by="Search Revenue Per Search Click",
+            ascending=False
+        )
+
+        top_geos = roi_geos["Country"].head(5).tolist()
+
+        high_potential_geos = rpc_geos["Country"].head(5).tolist()
+
+    # ------------------------------------------
+    # MEDIA BUYING REPORT
+    # ------------------------------------------
+
+    if media_report:
+
+        media_df = load_file(media_report)
+
+        media_df.columns = media_df.columns.str.strip()
+
+        media_df = media_df.sort_values(
+            by="Search ROI",
+            ascending=False
+        )
+
+        top_strategies = media_df[
+            "Ad Campaign Bid Type"
+        ].head(3).tolist()
+
+    # ==================================================
+    # PREVIEW
+    # ==================================================
 
     st.markdown("---")
 
@@ -138,43 +200,36 @@ if generate:
         unsafe_allow_html=True
     )
 
-    st.markdown("## Search Insights")
+    st.markdown("# Search Insights")
+
     st.markdown(f"### {month}")
 
-    st.markdown("### Uploaded Reports")
+    st.markdown("## Top Performing Themes")
 
-    if articles_report:
-        st.write("✅ Themes Report Uploaded")
+    st.info(
+        "AI Theme Generation Coming Next"
+    )
 
-    if geo_report:
-        st.write("✅ Geo Report Uploaded")
+    st.markdown("## Top Performing Geos")
 
-    if media_buying_report:
-        st.write("✅ Media Buying Report Uploaded")
+    for i, geo in enumerate(top_geos, start=1):
+        st.write(f"{i}. {geo}")
 
-    st.markdown("### Key Updates")
+    st.markdown("## High Potential Geos")
+
+    for i, geo in enumerate(high_potential_geos, start=1):
+        st.write(f"{i}. {geo}")
+
+    st.markdown("## Top Media Buying Strategies")
+
+    for i, strategy in enumerate(top_strategies, start=1):
+        st.write(f"{i}. {strategy}")
+
+    st.markdown("## Key Updates")
 
     st.write(key_updates)
 
     st.markdown(
-        """
-        🚧 Next Version:
-        <br><br>
-        • Read uploaded files
-        <br>
-        • Generate Top Performing Themes
-        <br>
-        • Generate Top Performing Geos
-        <br>
-        • Generate High Potential Geos
-        <br>
-        • Generate Top Media Buying Strategies
-        <br>
-        • Create ROI pie chart
-        <br>
-        • Export PDF
-        """,
+        "</div>",
         unsafe_allow_html=True
     )
-
-    st.markdown("</div>", unsafe_allow_html=True)
