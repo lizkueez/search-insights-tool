@@ -331,8 +331,12 @@ Article Titles:
             unsafe_allow_html=True
         )
 
-if ai_insights:
+st.write("DEBUG")
 
+st.write(locals())
+
+if ai_insights:
+    
     st.markdown(ai_insights)
 
 else:
