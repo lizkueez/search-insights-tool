@@ -1,3 +1,6 @@
+import pandas as pd
+from openai import OpenAI
+
 import streamlit as st
 import pandas as pd
 
@@ -99,8 +102,8 @@ st.divider()
 
 st.markdown("### Upload Reports")
 
-themes_report = st.file_uploader(
-    "Top Performing Themes Report",
+articles_report = st.file_uploader(
+    "Top Performing Articles Report",
     type=["csv", "xlsx"]
 )
 
@@ -159,6 +162,76 @@ if generate:
     top_geos = []
     high_potential_geos = []
     top_strategies = []
+
+    ai_insights = None
+
+    # ---------------- ARTICLES ----------------
+
+    if articles_report:
+
+        articles_df = load_file(
+            articles_report
+        )
+
+        articles_df.columns = (
+            articles_df.columns
+            .str.strip()
+        )
+
+        top_articles = (
+            articles_df.head(30)
+        )
+
+        title_column = (
+            top_articles.columns[0]
+        )
+
+        titles = (
+            top_articles[
+                title_column
+            ]
+            .astype(str)
+            .tolist()
+        )
+
+        titles_text = "\n".join(titles)
+
+        prompt = f"""
+Analyze these top-performing article titles.
+
+Return:
+
+# Top Performing Themes
+
+# Executive Summary
+
+# Recommendations
+
+Do not mention article titles directly.
+
+Article Titles:
+
+{titles_text}
+"""
+
+        response = (
+            client.chat.completions.create(
+                model="gpt-5-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
+        )
+
+        ai_insights = (
+            response
+            .choices[0]
+            .message
+            .content
+        )
 
     # ---------------- GEO ----------------
 
@@ -254,11 +327,17 @@ if generate:
             unsafe_allow_html=True
         )
 
-        for i in range(1,6):
-            st.markdown(
-                f'<div class="list-item">{i}. Coming Soon</div>',
-                unsafe_allow_html=True
-            )
+if ai_insights:
+
+    st.markdown(ai_insights)
+
+else:
+
+    for i in range(1,6):
+        st.markdown(
+            f'<div class="list-item">{i}. Coming Soon</div>',
+            unsafe_allow_html=True
+        )
 
     with right:
 
