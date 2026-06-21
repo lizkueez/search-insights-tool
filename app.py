@@ -1,359 +1,134 @@
 import streamlit as st
 import pandas as pd
+from openai import OpenAI
 
-st.set_page_config(
-    page_title="Search Insights",
-    layout="wide"
+client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"]
 )
 
-# ==================================================
+# =====================================
 # STYLING
-# ==================================================
+# =====================================
 
-st.markdown("""
-<style>
+# (all your CSS stays exactly the same)
 
-.main-title {
-    color: #4F6DF5;
-    font-size: 72px;
-    font-weight: 800;
-    line-height: 0.9;
-    margin-bottom: 20px;
-}
-
-.blue-pill {
-    background-color: #4F6DF5;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 700;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-.report-title {
-    font-size: 54px;
-    font-weight: 800;
-    color: #4F6DF5;
-    line-height: 0.9;
-}
-
-.section-title {
-    font-size: 32px;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.list-item {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.placeholder-box {
-    border: 2px dashed #D9D9D9;
-    border-radius: 12px;
-    height: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999999;
-    font-size: 18px;
-}
-
-.update-box {
-    background: #F7F8FA;
-    border-left: 5px solid #4F6DF5;
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 8px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ==================================================
+# =====================================
 # HEADER
-# ==================================================
+# =====================================
 
-st.markdown(
-    """
-    <div class="main-title">
-    Search<br>
-    Insights
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+Search Insights title
 
-month = st.text_input(
-    "Month",
-    placeholder="June 2026"
-)
+Month selector
 
-st.divider()
-
-# ==================================================
+# =====================================
 # FILE UPLOADS
-# ==================================================
+# =====================================
 
-st.markdown("### Upload Reports")
+articles_report
+geo_report
+media_report
 
-themes_report = st.file_uploader(
-    "Top Performing Themes Report",
-    type=["csv", "xlsx"]
-)
-
-geo_report = st.file_uploader(
-    "Geo Performance Report",
-    type=["csv", "xlsx"]
-)
-
-media_report = st.file_uploader(
-    "Media Buying Strategies Report",
-    type=["csv", "xlsx"]
-)
-
-st.divider()
-
-# ==================================================
+# =====================================
 # KEY UPDATES
-# ==================================================
+# =====================================
 
-key_updates = st.text_area(
-    "Key Updates",
-    height=200
-)
+key_updates
 
-st.divider()
+# =====================================
+# GENERATE BUTTON
+# =====================================
 
-generate = st.button(
-    "Generate Search Insights Report",
-    use_container_width=True
-)
+generate
 
-# ==================================================
+# =====================================
 # HELPERS
-# ==================================================
+# =====================================
 
-def load_file(uploaded_file):
-    if uploaded_file.name.endswith(".csv"):
-        return pd.read_csv(uploaded_file)
-    return pd.read_excel(uploaded_file)
+load_file()
 
-def clean_numeric(series):
-    return (
-        series.astype(str)
-        .str.replace("$", "", regex=False)
-        .str.replace(",", "", regex=False)
-        .str.replace("%", "", regex=False)
-        .str.strip()
-    )
+clean_numeric()
 
-# ==================================================
+# =====================================
 # REPORT GENERATION
-# ==================================================
+# =====================================
 
 if generate:
 
     top_geos = []
     high_potential_geos = []
     top_strategies = []
+    ai_insights = None
 
-    # ---------------- GEO ----------------
+    # -------------------------
+    # ARTICLES
+    # -------------------------
 
-    if geo_report:
+    if articles_report:
 
-        geo_df = load_file(geo_report)
+        load article report
 
-        geo_df.columns = geo_df.columns.str.strip()
+        take top 30 rows
 
-        geo_df["Search ROI Numeric"] = pd.to_numeric(
-            clean_numeric(geo_df["Search ROI"]),
-            errors="coerce"
-        )
+        extract:
 
-        geo_df["RPC Numeric"] = pd.to_numeric(
-            clean_numeric(
-                geo_df["Search Revenue Per Search Click"]
-            ),
-            errors="coerce"
-        )
+        "Original Article Name"
 
-        roi_geos = geo_df.sort_values(
-            by="Search ROI Numeric",
-            ascending=False
-        )
+        send titles to GPT
 
-        rpc_geos = geo_df.sort_values(
-            by="RPC Numeric",
-            ascending=False
-        )
+        GPT returns:
 
-        top_geos = roi_geos["Country"].head(5).tolist()
+            Top Performing Themes
+            Executive Summary
+            Recommendations
 
-        high_potential_geos = rpc_geos["Country"].head(5).tolist()
+        store response in:
 
-    # ---------------- MEDIA ----------------
+            ai_insights
 
-    if media_report:
+    # -------------------------
+    # GEO
+    # -------------------------
 
-        media_df = load_file(media_report)
+    existing geo logic
 
-        media_df.columns = media_df.columns.str.strip()
+    # -------------------------
+    # MEDIA
+    # -------------------------
 
-        media_df["Search ROI Numeric"] = pd.to_numeric(
-            clean_numeric(media_df["Search ROI"]),
-            errors="coerce"
-        )
+    existing media logic
 
-        media_df = media_df.sort_values(
-            by="Search ROI Numeric",
-            ascending=False
-        )
-
-        top_strategies = media_df[
-            "Ad Campaign Bid Type"
-        ].head(3).tolist()
-
-    # ==================================================
+    # =====================================
     # REPORT PREVIEW
-    # ==================================================
+    # =====================================
 
-    st.markdown("---")
+    Search Insights
 
-    st.markdown(
-        f"""
-        <div class="report-title">
-        Search<br>
-        Insights
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    Month
 
-    st.markdown(f"### {month}")
-
-    st.write("")
-
-    # ==================================================
+    # =====================================
     # CONTENT
-    # ==================================================
+    # =====================================
 
-    st.markdown(
-        '<div class="blue-pill">Content</div>',
-        unsafe_allow_html=True
-    )
+    if ai_insights:
 
-    left, right = st.columns([1,1])
+        display GPT response
 
-    with left:
+    else:
 
-        st.markdown(
-            '<div class="section-title">Top Performing Themes</div>',
-            unsafe_allow_html=True
-        )
+        Coming Soon
 
-        for i in range(1,6):
-            st.markdown(
-                f'<div class="list-item">{i}. Coming Soon</div>',
-                unsafe_allow_html=True
-            )
-
-    with right:
-
-        st.markdown(
-            """
-            <div class="placeholder-box">
-            Theme ROI Pie Chart
-            <br><br>
-            (Coming Soon)
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.write("")
-    st.write("")
-
-    # ==================================================
+    # =====================================
     # MEDIA BUYING
-    # ==================================================
+    # =====================================
 
-    st.markdown(
-        '<div class="blue-pill">Media Buying</div>',
-        unsafe_allow_html=True
-    )
+    Top Performing Geos
 
-    geo_col, rpc_col = st.columns(2)
+    High Potential Geos
 
-    with geo_col:
+    Top Strategies
 
-        st.markdown(
-            '<div class="section-title">Top Performing Geos</div>',
-            unsafe_allow_html=True
-        )
-
-        for i, geo in enumerate(top_geos, start=1):
-            st.markdown(
-                f'<div class="list-item">{i}. {geo}</div>',
-                unsafe_allow_html=True
-            )
-
-    with rpc_col:
-
-        st.markdown(
-            '<div class="section-title">High Potential Geos</div>',
-            unsafe_allow_html=True
-        )
-
-        for i, geo in enumerate(high_potential_geos, start=1):
-            st.markdown(
-                f'<div class="list-item">{i}. {geo}</div>',
-                unsafe_allow_html=True
-            )
-
-    st.write("")
-    st.write("")
-
-    st.markdown(
-        '<div class="section-title">Top Performing Media Buying Strategies</div>',
-        unsafe_allow_html=True
-    )
-
-    for i, strategy in enumerate(top_strategies, start=1):
-        st.markdown(
-            f'<div class="list-item">{i}. {strategy}</div>',
-            unsafe_allow_html=True
-        )
-
-    st.write("")
-    st.write("")
-
-    # ==================================================
+    # =====================================
     # KEY UPDATES
-    # ==================================================
+    # =====================================
 
-    st.markdown("---")
-
-    st.markdown(
-        '<div class="section-title">Key Updates</div>',
-        unsafe_allow_html=True
-    )
-
-    updates = [
-        x.strip()
-        for x in key_updates.split("\n")
-        if x.strip()
-    ]
-
-    for update in updates:
-
-        st.markdown(
-            f"""
-            <div class="update-box">
-            {update}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    Update Cards
