@@ -166,6 +166,7 @@ if generate:
     top_geos = []
     high_potential_geos = []
     top_strategies = []
+    
     ai_insights = None
 
     # ---------------- ARTICLES ----------------
