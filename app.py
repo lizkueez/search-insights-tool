@@ -324,7 +324,7 @@ Article Titles:
 
     left, right = st.columns([1,1])
 
-with left:
+    with left:
 
     st.markdown(
         '<div class="section-title">Top Performing Themes</div>',
