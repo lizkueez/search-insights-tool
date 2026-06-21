@@ -326,12 +326,12 @@ Article Titles:
 
     with left:
 
-    st.markdown(
+        st.markdown(
         '<div class="section-title">Top Performing Themes</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
+        st.markdown(
         "AI TEST"
     )
 
