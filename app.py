@@ -324,26 +324,26 @@ Article Titles:
 
     left, right = st.columns([1,1])
 
-    with left:
+with left:
 
-        st.markdown(
-            '<div class="section-title">Top Performing Themes</div>',
-            unsafe_allow_html=True
-        )
+    st.markdown(
+        '<div class="section-title">Top Performing Themes</div>',
+        unsafe_allow_html=True
+    )
 
-st.write("AI INSIGHTS VALUE:", ai_insights)
+    st.write("AI INSIGHTS VALUE:", ai_insights)
 
-if ai_insights:
-    
-    st.markdown(ai_insights)
+    if ai_insights:
 
-else:
+        st.markdown(ai_insights)
 
-    for i in range(1,6):
-        st.markdown(
-            f'<div class="list-item">{i}. Coming Soon</div>',
-            unsafe_allow_html=True
-        )
+    else:
+
+        for i in range(1,6):
+            st.markdown(
+                f'<div class="list-item">{i}. Coming Soon</div>',
+                unsafe_allow_html=True
+            )
 
     with right:
 
