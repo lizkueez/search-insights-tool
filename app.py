@@ -331,9 +331,7 @@ Article Titles:
             unsafe_allow_html=True
         )
 
-st.write("DEBUG")
-
-st.write(locals())
+st.write("AI INSIGHTS VALUE:", ai_insights)
 
 if ai_insights:
     
