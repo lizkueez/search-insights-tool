@@ -331,19 +331,9 @@ with left:
         unsafe_allow_html=True
     )
 
-    st.write("AI INSIGHTS VALUE:", ai_insights)
-
-    if ai_insights:
-
-        st.markdown(ai_insights)
-
-    else:
-
-        for i in range(1,6):
-            st.markdown(
-                f'<div class="list-item">{i}. Coming Soon</div>',
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            "AI TEST"
+        )
 
     with right:
 
