@@ -181,9 +181,43 @@ if generate:
             .head(30)
             .tolist()
         )
+        prompt = f"""
+        You are analyzing top-performing Search content.
+        
+        Review these article titles and provide:
 
-        st.write("Top Titles:")
-        st.write(top_titles[:5])
+        1. Top 5 themes
+        2. Why those themes are working
+        3. Audience interests being demonstrated
+        4. Recommended content directions
+        5. New content opportunities
+        
+        Do not mention article titles directly.
+        Do not reveal proprietary content.
+
+        Titles:
+
+        {chr(10).join(top_titles)}
+        """
+        
+        response = client.chat.completions.create(
+            model="gpt-5-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+        
+        ai_insights = (
+            response
+            .choices[0]
+            .message
+            .content
+        )
+
+        st.write(ai_insights)
 
     # ---------------- GEO ----------------
 
