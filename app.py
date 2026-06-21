@@ -331,9 +331,9 @@ with left:
         unsafe_allow_html=True
     )
 
-        st.markdown(
-            "AI TEST"
-        )
+    st.markdown(
+        "AI TEST"
+    )
 
     with right:
 
