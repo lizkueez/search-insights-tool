@@ -173,17 +173,17 @@ if generate:
             articles_report
         )
 
-title_column = "Original Article Name"
+        title_column = "Original Article Name"
 
-top_titles = (
-    articles_df[title_column]
-    .astype(str)
-    .head(30)
-    .tolist()
-)
+        top_titles = (
+            articles_df[title_column]
+            .astype(str)
+            .head(30)
+            .tolist()
+        )
 
-st.write("Top Titles:")
-st.write(top_titles[:5])
+        st.write("Top Titles:")
+        st.write(top_titles[:5])
 
     # ---------------- GEO ----------------
 
