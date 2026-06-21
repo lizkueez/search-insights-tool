@@ -1,14 +1,11 @@
-import pandas as pd
-from openai import OpenAI
-
 import streamlit as st
 import pandas as pd
+from openai import OpenAI
 
 st.set_page_config(
     page_title="Search Insights",
     layout="wide"
 )
-
 client = OpenAI(
     api_key=st.secrets["OPENAI_API_KEY"]
 )
@@ -166,7 +163,6 @@ if generate:
     top_geos = []
     high_potential_geos = []
     top_strategies = []
-    
     ai_insights = None
 
     # ---------------- ARTICLES ----------------
@@ -177,64 +173,9 @@ if generate:
             articles_report
         )
 
-        articles_df.columns = (
-            articles_df.columns
-            .str.strip()
-        )
-
-        top_articles = (
-            articles_df.head(30)
-        )
-
-        title_column = (
-            top_articles.columns[0]
-        )
-
-        titles = (
-            top_articles[
-                title_column
-            ]
-            .astype(str)
-            .tolist()
-        )
-
-        titles_text = "\n".join(titles)
-
-        prompt = f"""
-Analyze these top-performing article titles.
-
-Return:
-
-# Top Performing Themes
-
-# Executive Summary
-
-# Recommendations
-
-Do not mention article titles directly.
-
-Article Titles:
-
-{titles_text}
-"""
-
-        response = (
-            client.chat.completions.create(
-                model="gpt-5-mini",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            )
-        )
-
-        ai_insights = (
-            response
-            .choices[0]
-            .message
-            .content
+        st.write("Columns found:")
+        st.write(
+            list(articles_df.columns)
         )
 
     # ---------------- GEO ----------------
@@ -327,13 +268,15 @@ Article Titles:
     with left:
 
         st.markdown(
-        '<div class="section-title">Top Performing Themes</div>',
-        unsafe_allow_html=True
-    )
+            '<div class="section-title">Top Performing Themes</div>',
+            unsafe_allow_html=True
+        )
 
-        st.markdown(
-        "AI TEST"
-    )
+        for i in range(1,6):
+            st.markdown(
+                f'<div class="list-item">{i}. Coming Soon</div>',
+                unsafe_allow_html=True
+            )
 
     with right:
 
